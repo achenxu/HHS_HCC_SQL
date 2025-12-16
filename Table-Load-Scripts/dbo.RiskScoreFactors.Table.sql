@@ -1,4 +1,4 @@
-use [Sandbox]
+use [cfhp]
 if object_id('dbo.riskscorefactors') is not null
 	drop table riskscorefactors
 CREATE TABLE [dbo].[RiskScoreFactors](

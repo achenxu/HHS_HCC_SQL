@@ -1,4 +1,4 @@
-USE [Sandbox] --- set this to the database you will use ----
+USE [diy_dev] --- set this to the database you will use ----
 
 
 
@@ -35,7 +35,7 @@ CREATE TABLE [dbo].[Enrollment](
 	[paid_through_date] [date] NULL,
 	[epai] [nvarchar](50) NULL,
 	[rating_area_int] tinyint NULL,
-	[rating_area_text] [varchar](10) NULL,
+	[rating_area_text] [varchar](50) NULL,
 	[county] [varchar](50) null, 
 	[state] [varchar](2) NOT NULL,
 	[market] [varchar](1) NOT NULL,
@@ -51,8 +51,8 @@ CREATE TABLE [dbo].[Enrollment](
 	[broker_npn] [varchar](15) NULL,
 	[broker_name] [varchar](100) NULL,
 	[commission_paid] [float] NULL,
-	[exchange_subscriber_id] [varchar](10) NULL,
-	[exchange_member_id] [varchar](10) NULL,
+	[exchange_subscriber_id] [varchar](50) NULL,
+	[exchange_member_id] [varchar](50) NULL,
 	[udf_1] [varchar](500) NULL,
 	[udf_2] [varchar](500) NULL,
 	[udf_3] [varchar](500) NULL,
@@ -246,6 +246,30 @@ CREATE TABLE [dbo].[PharmacyClaims](
 	[udf_4] varchar(500) null,
 	[udf_5] varchar(500) null
  CONSTRAINT [PK_PharmacyClaims] PRIMARY KEY CLUSTERED 
+(
+	[RowNo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Supplemental]') AND type in (N'U'))
+DROP TABLE [dbo].[Supplemental]
+GO
+
+CREATE TABLE [dbo].[Supplemental](
+	[RowNo] [int] IDENTITY(1,1) NOT NULL,
+	[medical_claim_number] [varchar](50) NOT NULL,
+	[edge_medical_claim_number] varchar(100) null,
+	[dx] [varchar](10) NOT NULL,
+	[add_delete_flag] [varchar](1) NOT NULL,
+	[record_source] varchar(3) null,
+	[edge_supplemental_id] varchar(100) null,
+	[record_vendor] varchar(100) null,
+	[hios_issuer_id] [varchar](5) null,
+	[udf_1] varchar(500) null,
+	[udf_2] varchar(500) null
+ CONSTRAINT [PK_Supplemental] PRIMARY KEY CLUSTERED 
 (
 	[RowNo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -1483,27 +1507,3 @@ GO
 
 ALTER TABLE [dbo].[hcc_list] ADD  DEFAULT ((0)) FOR [AGE1_X_SEVERITY1]
 GO
-
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Supplemental]') AND type in (N'U'))
-DROP TABLE [dbo].[Supplemental]
-GO
-
-CREATE TABLE [dbo].[Supplemental](
-	[RowNo] [int] IDENTITY(1,1) NOT NULL,
-	[medical_claim_number] [varchar](50) NOT NULL,
-	[edge_medical_claim_number] varchar(100) null,
-	[dx] [varchar](10) NOT NULL,
-	[add_delete_flag] [varchar](1) NOT NULL,
-	[record_source] varchar(3) null,
-	[edge_supplemental_id] varchar(100) null,
-	[record_vendor] varchar(100) null,
-	[hios_issuer_id] [varchar](5) null,
-	[udf_1] varchar(500) null,
-	[udf_2] varchar(500) null
- CONSTRAINT [PK_Supplemental] PRIMARY KEY CLUSTERED 
-(
-	[RowNo] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-

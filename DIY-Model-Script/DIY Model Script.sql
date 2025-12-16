@@ -1,14 +1,14 @@
-use sandbox --- change this to whatever database you are using
-declare @benefityear int = 2025 ---- set this value to the model year you want to run your data through. Does not need to align with
-declare @startdate date = '2025-01-01' -- should generally be January 1
-declare @enddate date = '2025-12-31' --- last date of incurred dates you want to use
-declare @paidthrough date = '2026-04-30' --- paid through date
+use CFHP--- change this to whatever database you are using
+declare @benefityear int = 2024 ---- set this value to the model year you want to run your data through. Does not need to align with
+declare @startdate date = '2024-01-01' -- should generally be January 1
+declare @enddate date = '2024-12-31' --- last date of incurred dates you want to use
+declare @paidthrough date = '2025-04-30' --- paid through date
 
-declare @state varchar(2) = 'NY'
-declare @market int = null --- leave null to ignore 
+declare @state varchar(2) = 'TX'
+declare @market int = 1 --- leave null to ignore 
 declare @droptemp bit = 0 --- set to 0 to retain temp tables at end. Useful for troubleshooting
-declare @issuer_hios varchar(5) = '99999' -- leave null to ignore and treat all records as part of same HIOS
-declare @output_table varchar(50) = 'hcc_list_testoutput' --- set this to the name of the table you want the output set to be saved to.
+declare @issuer_hios varchar(5) = '63251' -- leave null to ignore and treat all records as part of same HIOS
+declare @output_table varchar(50) = 'hcc_list_all_claims_uid' --- set this to the name of the table you want the output set to be saved to.
 declare @drop_existing bit = 1
 /* set to 1 to delete the output table if it exists. If set to 0, script will still run and produce results to the hcc_list
 table but will not drop the existing output_table specified above and will throw an error */
@@ -220,7 +220,8 @@ unpivot (diagnosis for medical_claim_number in ([DX1]     ,[DX2]      ,[DX3]    
 	  into #MemberDiagnosisMap
 	  from #memberMapSvcDt
 	  group by issuer_member_id,member_uid,clmno, diagnosis
-
+      select *
+      from #memberMapSvcDt
 	  --- Assign  HCCs and apply conditions ----
 
 	  if object_id('tempdb..#MemberHCCMap') is not null drop table #MemberHCCMap
@@ -3305,11 +3306,19 @@ end
 end
 ----- End Model Code. Use the HCC_List table to query your risk scores -----
 EndCode:
-select left(hc.hios_plan_id,14), hc.metal, market, hc.rating_area,
-sum(risk_score*edge_member_months)/sum(edge_member_months), sum(edge_member_months)
+select left(hc.hios_plan_id,14) as planid, hc.metal, market, hc.rating_area,
+sum(risk_score*edge_member_months)/sum(edge_member_months) as risk_score, sum(edge_member_months) as member_months
 from hcc_list hc
 group by grouping sets ((left(hc.hios_plan_id,14), hc.metal, market, rating_area),market)
 
-select * from hcc_list
+
+select hc.hios_plan_id as planid, hc.metal, market, hc.rating_area,
+sum(risk_score*edge_member_months)/sum(edge_member_months) as risk_score, sum(edge_member_months) as member_months
+from hcc_list hc where edge_member_id is not null
+group by grouping sets  ((hc.hios_plan_id, hc.metal, market, rating_area),market)
 
 
+SELECT
+*
+FROM
+[dbo].[RARSD_Member_Variant_Risk_Score_Sum]
