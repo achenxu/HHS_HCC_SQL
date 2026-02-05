@@ -220,8 +220,6 @@ unpivot (diagnosis for medical_claim_number in ([DX1]     ,[DX2]      ,[DX3]    
 	  into #MemberDiagnosisMap
 	  from #memberMapSvcDt
 	  group by issuer_member_id,member_uid,clmno, diagnosis
-      select *
-      from #memberMapSvcDt
 	  --- Assign  HCCs and apply conditions ----
 
 	  if object_id('tempdb..#MemberHCCMap') is not null drop table #MemberHCCMap
