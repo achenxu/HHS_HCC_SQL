@@ -1,4 +1,4 @@
-use [cfhp]
+--use [diy_dev]
 if object_id('dbo.riskscorefactors') is not null
 	drop table riskscorefactors
 CREATE TABLE [dbo].[RiskScoreFactors](

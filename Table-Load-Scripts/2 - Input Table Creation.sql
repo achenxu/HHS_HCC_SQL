@@ -1,12 +1,12 @@
-USE [diy_dev] --- set this to the database you will use ----
+--USE [RiskAdjustment] --- set this to the database you will use ----
 
 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Enrollment]') AND type in (N'U'))
-DROP TABLE [dbo].[Enrollment]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[diy_enrollment]') AND type in (N'U'))
+DROP TABLE [dbo].[diy_enrollment]
 GO
 
-CREATE TABLE [dbo].[Enrollment](
+CREATE TABLE [dbo].[diy_enrollment](
 	[RowNo] [int] IDENTITY(1,1) NOT NULL,
 	[issuer_member_id] [varchar](50) NOT NULL,
 	[edge_member_id] [varchar](100) NULL,
@@ -59,7 +59,7 @@ CREATE TABLE [dbo].[Enrollment](
 	[udf_4] [varchar](500) NULL,
 	[udf_5] [varchar](500) NULL
 	
- CONSTRAINT [PK_Enrollment] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_diyEnrollment] PRIMARY KEY CLUSTERED 
 (
 	[RowNo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -67,8 +67,8 @@ CREATE TABLE [dbo].[Enrollment](
 GO
 
 /****** Object:  Table [dbo].[GroupInfo]    Script Date: 3/17/2025 10:23:19 AM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Groups]') AND type in (N'U'))
-DROP TABLE [dbo].[Groups]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[diy_groups]') AND type in (N'U'))
+DROP TABLE [dbo].[diy_groups]
 GO
 
 /****** Object:  Table [dbo].[GroupInfo]    Script Date: 3/17/2025 10:23:19 AM ******/
@@ -78,7 +78,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[Groups](
+CREATE TABLE [dbo].[diy_groups](
 	[group_id] [varchar](100) NOT NULL,
 	[goup_name] [varchar](100) NULL,
 	[group_address_line_1] [varchar](100) NULL,
@@ -100,8 +100,8 @@ GO
 
 
 /****** Object:  Table [dbo].[MedicalClaims]    Script Date: 1/3/2023 5:42:22 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MedicalClaims]') AND type in (N'U'))
-DROP TABLE [dbo].[MedicalClaims]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[diy_medical_claims]') AND type in (N'U'))
+DROP TABLE [dbo].[diy_medical_claims]
 GO
 
 
@@ -111,7 +111,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[MedicalClaims](
+CREATE TABLE [dbo].[diy_medical_claims](
 	[RowNo] [int] IDENTITY(1,1) NOT NULL,
 	[issuer_member_id] [varchar](50) NOT NULL,
 	[member_uid] [varchar](100) NULL,
@@ -189,7 +189,7 @@ CREATE TABLE [dbo].[MedicalClaims](
 	[udf_4] varchar(500) null,
 	[udf_5] varchar(500) null
 
- CONSTRAINT [PK_MedicalClaims] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_diyMedicalClaims] PRIMARY KEY CLUSTERED 
 (
 	[RowNo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -198,8 +198,8 @@ GO
 
 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PharmacyClaims]') AND type in (N'U'))
-DROP TABLE [dbo].[PharmacyClaims]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[diy_pharmacy_claims]') AND type in (N'U'))
+DROP TABLE [dbo].[diy_pharmacy_claims]
 GO
 
 /****** Object:  Table [dbo].[PharmacyClaims]    Script Date: 1/3/2023 5:52:55 PM ******/
@@ -209,7 +209,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[PharmacyClaims](
+CREATE TABLE [dbo].[diy_pharmacy_claims](
 	[RowNo] [int] IDENTITY(1,1) NOT NULL,
 	[issuer_member_id] [varchar](50) NOT NULL,
 	[member_uid] [varchar](100) NULL,
@@ -245,7 +245,7 @@ CREATE TABLE [dbo].[PharmacyClaims](
 	[udf_3] varchar(500) null,
 	[udf_4] varchar(500) null,
 	[udf_5] varchar(500) null
- CONSTRAINT [PK_PharmacyClaims] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_diyPharmacyClaims] PRIMARY KEY CLUSTERED 
 (
 	[RowNo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -253,11 +253,11 @@ CREATE TABLE [dbo].[PharmacyClaims](
 GO
 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Supplemental]') AND type in (N'U'))
-DROP TABLE [dbo].[Supplemental]
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[diy_supplemental]') AND type in (N'U'))
+DROP TABLE [dbo].[diy_supplemental]
 GO
 
-CREATE TABLE [dbo].[Supplemental](
+CREATE TABLE [dbo].[diy_supplemental](
 	[RowNo] [int] IDENTITY(1,1) NOT NULL,
 	[medical_claim_number] [varchar](50) NOT NULL,
 	[edge_medical_claim_number] varchar(100) null,
@@ -269,7 +269,7 @@ CREATE TABLE [dbo].[Supplemental](
 	[hios_issuer_id] [varchar](5) null,
 	[udf_1] varchar(500) null,
 	[udf_2] varchar(500) null
- CONSTRAINT [PK_Supplemental] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_diySupplemental] PRIMARY KEY CLUSTERED 
 (
 	[RowNo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
@@ -331,8 +331,8 @@ CREATE TABLE [dbo].[hcc_list](
 	[paid_through_date] [date] NULL,
 	[subscriber_flag] [varchar](1) NULL,
 	[subscriber_number] [varchar](50) NULL,
-	[exchange_subscriber_id] varchar(10) null,
-	[exchange_member_id] varchar(10) null,
+	[exchange_subscriber_id] varchar(50) null,
+	[exchange_member_id] varchar(50) null,
 	[market] [int] NULL,
 	[age_first] [int] NULL,
 	[age_last] [int] NULL,

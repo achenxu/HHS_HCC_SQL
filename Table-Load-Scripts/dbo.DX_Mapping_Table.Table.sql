@@ -1,5 +1,5 @@
 /****** Object:  Table [dbo].[DX_Mapping_Table]    Script Date: 11/9/2024 6:08:03 AM ******/
-USE CFHP
+--USE CFHP
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
