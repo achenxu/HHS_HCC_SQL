@@ -98,7 +98,11 @@ values
 (10,'Limited Cost Share Silver',2020,1.12),
 (9,'Limited Cost Share Gold',2020,1.07),
 (8,'Limited Cost Share Platinum',2020,1),
-(13,'CSR: State Subsidy – Gold',2020,1.07),
+(13,'CSR: State Subsidy – Gold',2020,1.07)
+GO
+
+insert into dbo.csr_adj_factors
+values
 (1,'Silver 94%',2019,1.12),
 (2,'Silver 87%',2019,1.12),
 (3,'Silver 73%',2019,1),
@@ -150,4 +154,18 @@ values
 (10,'Limited Cost Share Silver',2016,1.12),
 (9,'Limited Cost Share Gold',2016,1.07),
 (8,'Limited Cost Share Platinum',2016,1),
-(13,'CSR: State Subsidy – Gold',2016,1.07)
+(13,'CSR: State Subsidy – Gold',2016,1.07),
+(1,'Silver 94%',2027,1.12),
+(2,'Silver 87%',2027,1.12),
+(3,'Silver 73%',2027,1),
+(4,'No CSR',2027,1),
+(7,'Zero Cost Share Bronze',2027,1.51),
+(6,'Zero Cost Share Silver',2027,1.46),
+(5,'Zero Cost Share Gold',2027,1.39),
+(12,'Zero Cost Share Platinum',2027,1.31),
+(11,'Limited Cost Share Bronze',2027,1.19),
+(10,'Limited Cost Share Silver',2027,1.15),
+(9,'Limited Cost Share Gold',2027,1.1),
+(8,'Limited Cost Share Platinum',2027,1.04),
+(13,'CSR: State Subsidy – Gold',2027,1.07)
+GO

@@ -1,14 +1,14 @@
-use CFHP--- change this to whatever database you are using
-declare @benefityear int = 2024 ---- set this value to the model year you want to run your data through. Does not need to align with
-declare @startdate date = '2024-01-01' -- should generally be January 1
-declare @enddate date = '2024-12-31' --- last date of incurred dates you want to use
-declare @paidthrough date = '2025-04-30' --- paid through date
+--use diy_dev--- change this to whatever database you are using
+declare @benefityear int = 2025 ---- set this value to the model year you want to run your data through. Does not need to align with
+declare @startdate date = '2025-01-01' -- should generally be January 1
+declare @enddate date = '2025-12-31' --- last date of incurred dates you want to use
+declare @paidthrough date = '2026-04-30' --- paid through date
 
 declare @state varchar(2) = 'TX'
-declare @market int = 1 --- leave null to ignore 
+declare @market int = null  --- leave null to ignore 
 declare @droptemp bit = 0 --- set to 0 to retain temp tables at end. Useful for troubleshooting
-declare @issuer_hios varchar(5) = '63251' -- leave null to ignore and treat all records as part of same HIOS
-declare @output_table varchar(50) = 'hcc_list_all_claims_uid' --- set this to the name of the table you want the output set to be saved to.
+declare @issuer_hios varchar(5) =  null -- leave null to ignore and treat all records as part of same HIOS
+declare @output_table varchar(50) = 'hcc_list' --- set this to the name of the table you want the output set to be saved to.
 declare @drop_existing bit = 1
 /* set to 1 to delete the output table if it exists. If set to 0, script will still run and produce results to the hcc_list
 table but will not drop the existing output_table specified above and will throw an error */
@@ -16,23 +16,18 @@ table but will not drop the existing output_table specified above and will throw
 
 declare @model_year varchar(50)
 	
-if @benefityear = 2016 set @model_year = '2016_DIY_121916'
-if @benefityear = 2017 set @model_year = '2017_DIY_112717'
-if @benefityear = 2018 set @model_year = '2018_DIY_120418'
-if @benefityear = 2019 set @model_year = '2019_DIY_071619'
-if @benefityear = 2020 set @model_year = '2020_DIY_080320'
-if @benefityear = 2021 set @model_year = '2021_DIY_033122'
+
 if @benefityear = 2022 set @model_year = '2022_DIY_122022'
 if @benefityear = 2023 set @model_year = '2023_NBPP_050622'
 if @benefityear = 2024 set @model_year = '2024_DIY_090624'
 if @benefityear = 2025 set @model_year = '2025_DIY_072325'
 if @benefityear = 2026 set @model_year = '2026_NBPP_100524'
-
+if @benefityear = 2027 set @model_year = '2027_NBPP_020926'
 /* Updates HCC List table from the Enrollment tables. Account for State CSR variants In the 2025 benefit year, Arkansas, California, Colorado, Connecticut, Massachusetts, New Mexico, and New 
 York have premium assistance Medicaid Alternative plans or other types of State subsidy plans.*/
 truncate table hcc_list
 
-  insert into hcc_list
+  insert into dbo.hcc_list
 	  (issuer_member_id,
 	  eff_date, exp_date, birth_date, metal, hios_plan_id, csr, sex, market, state, rating_area, subscriber_flag, subscriber_number, zip_code, race, ethnicity,
 	  aptc_flag, state_premium_subsidy_flag, state_csr_flag, ichra_qsehra, qsehra_spouse,
@@ -96,7 +91,7 @@ member_uid,
           ,group_id
           ,subscriber_monthly_premium
           ,case when market in ('1','2','3','4') then substring(hios_plan_id,1,5) else null end as hios_issuer_id
-	  FROM [Enrollment]
+	  FROM dbo.diy_enrollment
   where eff_date <= @enddate and exp_date >= @startdate
   and (market = @market or @market is null)
   and state = @state
@@ -164,14 +159,14 @@ ON [dbo].[#AcceptableClaims] ([medical_claim_number])
 
 insert into #acceptableclaims
 select distinct medical_claim_number, 'BillTypeIP'
-from MedicalClaims where form_type = 'I' and  right(bill_type,3) in ('111','117','112','113','114')
+from diy_medical_claims where form_type = 'I' and  right(bill_type,3) in ('111','117','112','113','114')
 and statement_to between
 @startdate and @enddate and paid_date <= @paidthrough
 and (@issuer_hios is null or hios_issuer_id = @issuer_hios)
 --- outpatient with acceptable servicecode
 insert into #acceptableclaims
 select distinct medical_claim_number, 'UBServiceCode'
-from MedicalClaims mc
+from diy_medical_claims mc
 where form_type = 'I' and left(right(bill_type,3),2) in ('13','71','76','77','85','87','73')
 and exists (select 1 from ServiceCodeReference scref where mc.service_code = scref.SRVC_CD
 and scref.CPT_HCPCSELGBL_RISKADJSTMT_IND = 'Y'
@@ -182,7 +177,7 @@ and coalesce(line_service_date_to, statement_to, line_service_date_from, stateme
 --- hcfa with acceptable servicecode
 insert into #acceptableclaims
 select distinct medical_claim_number, 'HCFAServiceCode'
-from MedicalClaims mc
+from diy_medical_claims mc
 where form_type = 'P'
 and exists (select 1 from ServiceCodeReference scref where mc.service_code = scref.SRVC_CD
 and scref.CPT_HCPCSELGBL_RISKADJSTMT_IND = 'Y'
@@ -199,19 +194,19 @@ select distinct
 issuer_member_id,member_uid, diagnosis, clmno, svc_dt into #memberMapSvcDt
 from (select issuer_member_id,member_uid, clm.medical_claim_number clmno,coalesce(line_service_date_to, statement_to) svc_dt, [DX1]     ,[DX2]      ,[DX3]      ,[DX4]      ,[DX5]      ,[DX6]      ,[DX7]      ,[DX8]      ,[DX9]      ,[DX10]      ,[DX11]      ,[DX12]      ,[DX13]      ,[DX14]      ,[DX15]      ,[DX16]      ,[DX17]      ,[DX18]      ,[DX19]
       ,[DX20],[DX21] ,[DX22] ,[DX23] ,[DX24] ,[DX25]
-	  from medicalclaims clm join #acceptableclaims accept on clm.medical_claim_number = accept.medical_claim_number) p
+	  from diy_medical_claims clm join #acceptableclaims accept on clm.medical_claim_number = accept.medical_claim_number) p
 unpivot (diagnosis for medical_claim_number in ([DX1]     ,[DX2]      ,[DX3]      ,[DX4]      ,[DX5]      ,[DX6]      ,[DX7]      ,[DX8]      ,[DX9]      ,[DX10]      ,[DX11]      ,[DX12]      ,[DX13]      ,[DX14]      ,[DX15]      ,[DX16]      ,[DX17]      ,[DX18]      ,[DX19]
       ,[DX20],[DX21] ,[DX22] ,[DX23] ,[DX24] ,[DX25]) )as unpvt
 
 	  ----- Add and Delete Supplemental Diagnoses ----
 	  delete from #memberMapSvcDt 
-	  where exists (select 1 from Supplemental supp where #memberMapSvcDt.clmno = supp.medical_claim_number
+	  where exists (select 1 from diy_supplemental supp where #memberMapSvcDt.clmno = supp.medical_claim_number
 	  and #memberMapSvcDt.diagnosis = supp.DX and supp.add_delete_flag = 'D'
 	  and (@issuer_hios is null or supp.hios_issuer_id = @issuer_hios)
 	  )
 
 	  insert into #memberMapSvcDt
-	  select distinct clm.issuer_member_id, clm.member_uid, supp.dx, clm.medical_claim_number, coalesce(line_service_date_to, line_service_date_from, statement_to) from medicalclaims clm join #acceptableclaims accept on clm.medical_claim_number = accept.medical_claim_number join Supplemental supp on clm.medical_claim_number= supp.medical_claim_number
+	  select distinct clm.issuer_member_id, clm.member_uid, supp.dx, clm.medical_claim_number, coalesce(line_service_date_to, line_service_date_from, statement_to) from diy_medical_claims clm join #acceptableclaims accept on clm.medical_claim_number = accept.medical_claim_number join diy_supplemental supp on clm.medical_claim_number= supp.medical_claim_number
 	  where add_delete_flag = 'A'
 	  and (@issuer_hios is null or supp.hios_issuer_id= @issuer_hios)
 
@@ -224,13 +219,13 @@ unpivot (diagnosis for medical_claim_number in ([DX1]     ,[DX2]      ,[DX3]    
 
 	  if object_id('tempdb..#MemberHCCMap') is not null drop table #MemberHCCMap
 
-	  select distinct map.issuer_member_id,map.member_uid, cc_cd HCC into #MemberHCCMap from #MemberDiagnosisMap map join enrollment enr on map.member_uid = enr.member_uid
+	  select distinct map.issuer_member_id,map.member_uid, cc_cd HCC into #MemberHCCMap from #MemberDiagnosisMap map join diy_enrollment enr on map.member_uid = enr.member_uid
 	  join dx_mapping_table hcc on map.diagnosis = hcc.dgns_cd
 	  where diag_dt between dgns_cd_eff_strt_dt and dgns_cd_eff_end_dt
 	  and FLOOR(DATEDIFF(DAY, birth_date, diag_dt))/365.25 between min_age_dgns_include and max_age_dgns_exclude and (CC_sex_split = 'X' or (gender = 'M' and cc_sex_split = 'male') or (gender = 'F' and cc_sex_split = 'female'))
 	  	  and FLOOR(DATEDIFF(DAY, birth_date, diag_dt))/365.25 between cc_age_split_min_age_inc and cc_age_split_max_age_exc
 		  union
-		  	  select map.issuer_member_id,map.member_uid, acc_cd HCC from #MemberDiagnosisMap map join enrollment enr on map.member_uid = enr.member_uid
+		  	  select map.issuer_member_id,map.member_uid, acc_cd HCC from #MemberDiagnosisMap map join diy_enrollment enr on map.member_uid = enr.member_uid
 	  join dx_mapping_table hcc on map.diagnosis = hcc.dgns_cd
 	  where diag_dt between dgns_cd_eff_strt_dt and dgns_cd_eff_end_dt
 	  and FLOOR(DATEDIFF(DAY, birth_date, diag_dt))/365.25 between min_age_dgns_include and max_age_dgns_exclude and (CC_sex_split = 'X' or (gender = 'M' and cc_sex_split = 'male') or (gender = 'F' and cc_sex_split = 'female'))
@@ -246,14 +241,14 @@ INCLUDE ([issuer_member_id],[member_uid])
               member_uid varchar(100),
 			  rxc varchar(10))
 insert into #rxc_mapping
-select distinct issuer_member_id,member_uid, RXC from PharmacyClaims rx join NDC_RXC ndc
+select distinct issuer_member_id,member_uid, RXC from diy_pharmacy_claims rx join NDC_RXC ndc
 on rx.NDC = ndc.NDC
 and rx.filled_date between @startdate and @enddate
 and rx.paid_date <= @paidthrough
 --and deniedflag = 'A'
 and (@issuer_hios is null or hios_issuer_id = @issuer_hios)
 union
-select distinct issuer_member_id,member_uid, rxc from medicalclaims med join hcpcsrxc hcpcs on med.service_code= hcpcs.hcpcs_code
+select distinct issuer_member_id,member_uid, rxc from diy_medical_claims med join hcpcsrxc hcpcs on med.service_code= hcpcs.hcpcs_code
 where (form_type = 'P' or left(right(bill_type,3),2) in ('11','13','71','76','77','85','87','73')) and coalesce( statement_to, Line_Service_Date_From, statement_from) between
 @startdate and @enddate and paid_date <= @paidthrough
 --and deniedflag = 'A'
@@ -3309,14 +3304,3 @@ sum(risk_score*edge_member_months)/sum(edge_member_months) as risk_score, sum(ed
 from hcc_list hc
 group by grouping sets ((left(hc.hios_plan_id,14), hc.metal, market, rating_area),market)
 
-
-select hc.hios_plan_id as planid, hc.metal, market, hc.rating_area,
-sum(risk_score*edge_member_months)/sum(edge_member_months) as risk_score, sum(edge_member_months) as member_months
-from hcc_list hc where edge_member_id is not null
-group by grouping sets  ((hc.hios_plan_id, hc.metal, market, rating_area),market)
-
-
-SELECT
-*
-FROM
-[dbo].[RARSD_Member_Variant_Risk_Score_Sum]

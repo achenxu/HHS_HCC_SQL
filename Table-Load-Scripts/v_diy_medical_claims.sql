@@ -1,0 +1,85 @@
+
+/****** Object:  View [dbo].[v_diy_medical_claims]    Script Date: 2/12/2026 1:11:48 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[v_diy_medical_claims]
+AS
+SELECT [MemberID] AS issuer_member_id,
+       [edge_memberID] AS edge_member_id,
+       [issuer_hios] AS hios_issuer_id,
+       [ClaimNumber] AS medical_claim_number,
+       [edge_claimnumber] AS edge_medical_claim_number,
+       [LineNumber] AS line_number,
+       [FormType] AS form_type,
+       [BillType] AS bill_type,
+       [StatementFrom] AS statement_from_date,
+       [StatementTo] AS statement_to_date,
+       [LineServiceDateFrom] AS line_service_date_from,
+       [LineServiceDateTo] AS line_service_date_to,
+       [PaidDate] AS paid_date,
+       [BilledAmount] AS billed_amount,
+       [AllowedAmount] AS allowed_amount,
+       [PaidAmount] AS paid_amount,
+       [RevenueCode] AS revenue_code,
+       [ServiceCode] AS service_code,
+       [ServiceTypeCode] AS service_type_code,
+       [Modifier1] AS modifier_1,
+       [Modifier2] AS modifier_2,
+       [Modifier3] AS modifier_3,
+       [units] AS units,
+       [PlaceOfServiceCode] AS place_of_service_code,
+       [DeniedFlag] AS denied_claim_flag,
+       [DX1] AS dx1,
+       [DX2] AS dx2,
+       [DX3] AS dx3,
+       [DX4] AS dx4,
+       [DX5] AS dx5,
+       [DX6] AS dx6,
+       [DX7] AS dx7,
+       [DX8] AS dx8,
+       [DX9] AS dx9,
+       [DX10] AS dx10,
+       [DX11] AS dx11,
+       [DX12] AS dx12,
+       [DX13] AS dx13,
+       [DX14] AS dx14,
+       [DX15] AS dx15,
+       [DX16] AS dx16,
+       [DX17] AS dx17,
+       [DX18] AS dx18,
+       [DX19] AS dx19,
+       [DX20] AS dx20,
+       [DX21] AS dx21,
+       [DX22] AS dx22,
+       [DX23] AS dx23,
+       [DX24] AS dx24,
+       [DX25] AS dx25,
+       [DeniedReasonCode] AS denied_claim_reason_code,
+       [DeniedReasonDesc] AS denied_claim_reason_desc,
+       [DischargeCode] AS discharge_code,
+       [BillingProviderID] AS billing_provider_id,
+       [BillingProviderIDQualifier] AS billing_provider_id_qualifier,
+       [RenderingProviderID] AS rendering_provider_id,
+       [RenderingProviderIDQualifier] AS rendering_provider_id_qualifier,
+       [BillingProviderTIN] AS billing_provider_tin,
+       [NetworkIndicator] AS network_indicator,
+       [DerivedIndicator] AS derived_indicator,
+       [InterimBillOrigClaimId] AS interim_bill_orig_claim_id,
+       [InterimBillOrigClaimLine] AS interim_bill_orig_claim_line,
+       [PriorClaimID] AS prior_claim_id,
+       [ClaimVersion] AS claim_version,
+       [voidreplaceindic] AS void_replace_ind,
+       [udf1] AS udf_1,
+       [udf2] AS udf_2,
+       [udf3] AS udf_3,
+       [udf4] AS udf_4,
+       [udf5] AS udf_5
+FROM   [dbo].[MedicalClaims];
+
+GO
+
+
