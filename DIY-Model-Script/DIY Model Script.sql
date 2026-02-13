@@ -4,7 +4,7 @@ declare @startdate date = '2025-01-01' -- should generally be January 1
 declare @enddate date = '2025-12-31' --- last date of incurred dates you want to use
 declare @paidthrough date = '2026-04-30' --- paid through date
 
-declare @state varchar(2) = 'TX'
+declare @state varchar(2) = 'FL'
 declare @market int = null  --- leave null to ignore 
 declare @droptemp bit = 0 --- set to 0 to retain temp tables at end. Useful for troubleshooting
 declare @issuer_hios varchar(5) =  null -- leave null to ignore and treat all records as part of same HIOS
@@ -242,7 +242,7 @@ INCLUDE ([issuer_member_id],[member_uid])
 			  rxc varchar(10))
 insert into #rxc_mapping
 select distinct issuer_member_id,member_uid, RXC from diy_pharmacy_claims rx join NDC_RXC ndc
-on rx.NDC = ndc.NDC
+on rx.NDC = ndc.NDC_CODE and @benefityear between ndc.start_year and ndc.end_year
 and rx.filled_date between @startdate and @enddate
 and rx.paid_date <= @paidthrough
 --and deniedflag = 'A'
