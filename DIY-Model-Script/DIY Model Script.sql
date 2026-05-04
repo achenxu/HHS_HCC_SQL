@@ -507,9 +507,15 @@ and hcc = '62')
 
 update hc
 set HHS_HCC063= 1
-from hcc_list hc 
+from hcc_list hc
 where exists (select 1 from #MemberHCCMap mp where (hc.issuer_member_id= mp.issuer_member_id or hc.member_uid=mp.member_uid)
 and hcc = '63')
+
+update hc
+set HHS_HCC064= 1
+from hcc_list hc
+where exists (select 1 from #MemberHCCMap mp where (hc.issuer_member_id= mp.issuer_member_id or hc.member_uid=mp.member_uid)
+and hcc = '64')
 
 update hc
 set HHS_HCC066= 1
@@ -2076,6 +2082,16 @@ HHS_HCC161_2 = 1 or
 HHS_HCC234 = 1 or
 HHS_HCC254 = 1)
 
+/* CMS infant severity additions verified against CMS SAS source for
+   BY2018 through BY2024 (V0518F3M, V0519F3M, V0520F5M, CY21M07C,
+   CY22M07C, CY23M07C, CY24M07C):
+   - HCC064 in SEVERITY4: canonical every year BY2018+; SQL was simply
+     missing the column and the assignment.
+   - HCC028 in SEVERITY2: canonical every year BY2018+; SQL was missing
+     the assignment. */
+update hcc_list set ihcc_severity4 = 1 where age_last <= 1 and HHS_HCC064 = 1
+update hcc_list set ihcc_severity2 = 1 where age_last <= 1 and HHS_HCC028 = 1
+
 --- assign maturity levels
 update hcc_list set ihcc_age1 =1  where age_last = 1
 
@@ -2199,6 +2215,7 @@ SELECT issuer_member_id
       ,[HHS_HCC061]
       ,[HHS_HCC062]
       ,[HHS_HCC063]
+      ,[HHS_HCC064]
       ,[HHS_HCC066]
       ,[HHS_HCC067]
       ,[HHS_HCC068]
@@ -2366,6 +2383,7 @@ SELECT issuer_member_id
       ,[HHS_HCC061]
       ,[HHS_HCC062]
       ,[HHS_HCC063]
+      ,[HHS_HCC064]
       ,[HHS_HCC066]
       ,[HHS_HCC067]
       ,[HHS_HCC068]
@@ -2700,6 +2718,7 @@ SELECT issuer_member_id
       ,[HHS_HCC061]
       ,[HHS_HCC062]
       ,[HHS_HCC063]
+      ,[HHS_HCC064]
       ,[HHS_HCC066]
       ,[HHS_HCC067]
       ,[HHS_HCC068]
@@ -2972,6 +2991,7 @@ SELECT issuer_member_id
       ,[HHS_HCC061]
       ,[HHS_HCC062]
       ,[HHS_HCC063]
+      ,[HHS_HCC064]
       ,[HHS_HCC066]
       ,[HHS_HCC067]
       ,[HHS_HCC068]

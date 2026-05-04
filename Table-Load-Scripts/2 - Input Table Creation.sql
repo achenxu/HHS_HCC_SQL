@@ -137,7 +137,7 @@ CREATE TABLE [dbo].[diy_medical_claims](
 	[modifier_2] [varchar](2) NULL,
 	[modifier_3] [varchar](2) NULL,
 	[units] float NULL,
-	[units_measure] varchar(100) NULL,
+	[units_measure] varchar(100)ï¿½NULL,
 	[place_of_service_code] [varchar](2) NULL,
 	[denied_claim_flag] [varchar](1) NULL,
 	[denied_claim_line_flag] [varchar](1) NULL,
@@ -439,6 +439,7 @@ CREATE TABLE [dbo].[hcc_list](
 	[HHS_HCC061] [int] NULL,
 	[HHS_HCC062] [int] NULL,
 	[HHS_HCC063] [int] NULL,
+	[HHS_HCC064] [int] NULL,
 	[HHS_HCC066] [int] NULL,
 	[HHS_HCC067] [int] NULL,
 	[HHS_HCC068] [int] NULL,
@@ -880,6 +881,9 @@ ALTER TABLE [dbo].[hcc_list] ADD  DEFAULT ((0)) FOR [HHS_HCC062]
 GO
 
 ALTER TABLE [dbo].[hcc_list] ADD  DEFAULT ((0)) FOR [HHS_HCC063]
+GO
+
+ALTER TABLE [dbo].[hcc_list] ADD  DEFAULT ((0)) FOR [HHS_HCC064]
 GO
 
 ALTER TABLE [dbo].[hcc_list] ADD  DEFAULT ((0)) FOR [HHS_HCC066]
