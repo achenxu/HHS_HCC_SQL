@@ -2082,15 +2082,28 @@ HHS_HCC161_2 = 1 or
 HHS_HCC234 = 1 or
 HHS_HCC254 = 1)
 
-/* CMS infant severity additions verified against CMS SAS source for
-   BY2018 through BY2024 (V0518F3M, V0519F3M, V0520F5M, CY21M07C,
-   CY22M07C, CY23M07C, CY24M07C):
+/* CMS infant severity additions/changes verified against CMS SAS source
+   for BY2018 through BY2024 (V0518F3M, V0519F3M, V0520F5M, CY21M07C,
+   CY22M07C, CY23M07C, CY24M07C) and the BY2025 DIY tables and Python.
    - HCC064 in SEVERITY4: canonical every year BY2018+; SQL was simply
      missing the column and the assignment.
    - HCC028 in SEVERITY2: canonical every year BY2018+; SQL was missing
-     the assignment. */
+     the assignment.
+   - HCC070: BY2024 and earlier -> SEVERITY2 (handled in the SEVERITY2
+     block above); BY2025+ -> SEVERITY3.
+   - HCC071: BY2024 and earlier -> SEVERITY1 (handled in the SEVERITY1
+     block above); BY2025+ -> SEVERITY2.
+   For HCC070/HCC071 the existing SEVERITY2/1 blocks above are left intact
+   for backward compatibility; the higher-severity flag set here for
+   benefityear >= 2025 wins via the hierarchy enforcement further down. */
 update hcc_list set ihcc_severity4 = 1 where age_last <= 1 and HHS_HCC064 = 1
 update hcc_list set ihcc_severity2 = 1 where age_last <= 1 and HHS_HCC028 = 1
+
+IF @benefityear >= 2025
+BEGIN
+update hcc_list set ihcc_severity3 = 1 where age_last <= 1 and HHS_HCC070 = 1
+update hcc_list set ihcc_severity2 = 1 where age_last <= 1 and HHS_HCC071 = 1
+END
 
 --- assign maturity levels
 update hcc_list set ihcc_age1 =1  where age_last = 1
